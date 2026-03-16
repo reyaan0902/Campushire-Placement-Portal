@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register — CampusHire</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0f1e; --surface: #111827; --card: #161f35;
+      --border: #1e2d4a; --accent: #3b82f6; --accent2: #06b6d4;
+      --text: #e2e8f0; --muted: #64748b;
+      --success: #10b981; --danger: #ef4444;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Nunito', sans-serif; min-height: 100vh;
+    }
+    body::before {
+      content:''; position:fixed; inset:0;
+      background-image: linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),
+                        linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);
+      background-size:50px 50px; pointer-events:none; z-index:0;
+    }
+
+    nav {
+      position:fixed; top:0; width:100%; z-index:100;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 60px;
+      background:rgba(10,15,30,0.85); backdrop-filter:blur(20px);
+      border-bottom:1px solid var(--border);
+    }
+    .logo { font-family:'Nunito',sans-serif; font-weight:800; font-size:1.4rem; color:var(--text); text-decoration:none; }
+    .logo span { color:var(--accent); }
+    .nav-link { color:var(--muted); text-decoration:none; font-size:0.88rem; }
+    .nav-link:hover { color:var(--text); }
+
+    .page {
+      position:relative; z-index:1;
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      padding:100px 20px 60px;
+    }
+
+    .form-card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:20px; padding:44px 48px; width:100%; max-width:560px;
+      animation: fadeUp 0.5s ease both;
+    }
+    @keyframes fadeUp {
+      from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)}
+    }
+    .form-header { margin-bottom:32px; }
+    .form-header h2 {
+      font-family:'Nunito',sans-serif; font-size:1.8rem; font-weight:800;
+      letter-spacing:-0.5px;
+    }
+    .form-header p { color:var(--muted); margin-top:8px; font-size:0.9rem; }
+
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-group { margin-bottom:20px; }
+    .form-group label {
+      display:block; font-size:0.82rem; color:var(--muted);
+      margin-bottom:8px; font-weight:500; text-transform:uppercase; letter-spacing:0.5px;
+    }
+    .form-group input,
+    .form-group select {
+      width:100%; padding:12px 16px;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:10px; color:var(--text); font-family:'Nunito',sans-serif;
+      font-size:0.92rem; transition:border-color 0.2s, box-shadow 0.2s;
+      appearance:none;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline:none; border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(59,130,246,0.15);
+    }
+    .form-group input::placeholder { color:var(--muted); }
+
+    .skills-input-wrap { position:relative; }
+    .skills-tags {
+      display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;
+    }
+    .skill-tag {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:4px 12px; background:rgba(59,130,246,0.15);
+      color:var(--accent); border-radius:100px; font-size:0.78rem;
+    }
+    .skill-tag button {
+      background:none; border:none; color:var(--accent);
+      cursor:pointer; font-size:0.9rem; line-height:1;
+    }
+
+    .submit-btn {
+      width:100%; padding:14px; background:linear-gradient(135deg, var(--accent), #6366f1);
+      color:#fff; border:none; border-radius:10px; font-size:0.95rem;
+      font-family:'Nunito',sans-serif; font-weight:500; cursor:pointer;
+      transition:all 0.2s; margin-top:8px;
+      box-shadow:0 8px 24px rgba(59,130,246,0.3);
+    }
+    .submit-btn:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(59,130,246,0.45); }
+
+    .form-footer {
+      text-align:center; margin-top:24px; font-size:0.85rem; color:var(--muted);
+    }
+    .form-footer a { color:var(--accent); text-decoration:none; }
+    .form-footer a:hover { text-decoration:underline; }
+
+    .msg {
+      padding:12px 16px; border-radius:8px; font-size:0.85rem;
+      margin-bottom:20px; display:none;
+    }
+    .msg.success { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); color:#10b981; }
+    .msg.error   { background:rgba(239,68,68,0.1);  border:1px solid rgba(239,68,68,0.3);  color:#ef4444; }
+
+    @media(max-width:600px){
+      nav { padding:16px 20px; }
+      .form-card { padding:32px 24px; }
+      .form-row { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">Campus<span>Hire</span></a>
+    <a href="student-login.html" class="nav-link">Already registered? Login →</a>
+  </nav>
+
+  <div class="page">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>Create Account 🎓</h2>
+        <p>Join your college placement portal and get discovered by top companies</p>
+      </div>
+
+      <div class="msg" id="msg"></div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="name" placeholder="Rahul Sharma"/>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="rahul@college.edu"/>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="phone" placeholder="9876543210"/>
+        </div>
+        <div class="form-group">
+          <label>CGPA</label>
+          <input type="number" id="cgpa" placeholder="8.4" step="0.1" min="0" max="10"/>
+        </div>
+      </div>
+
+      
+      <div class="form-group">
+        <label>College / University Name</label>
+        <input type="text" id="college" placeholder="e.g. Mumbai University, VIT, BITS Pilani"/>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Course</label>
+          <select id="course">
+            <option value="">Select Course</option>
+            <option>BTech</option>
+            <option>BSc</option>
+            <option>BCA</option>
+            <option>MCA</option>
+            <option>MTech</option>
+            <option>MBA</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Branch</label>
+          <select id="branch">
+            <option value="">Select Branch</option>
+            <option>Computer Science</option>
+            <option>Information Technology</option>
+            <option>Electronics</option>
+            <option>Mechanical</option>
+            <option>Civil</option>
+            <option>Electrical</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Year</label>
+        <select id="year">
+          <option value="">Select Year</option>
+          <option>1st Year</option>
+          <option>2nd Year</option>
+          <option>3rd Year</option>
+          <option>4th Year</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Skills (Press Enter to add)</label>
+        <input type="text" id="skillInput" placeholder="e.g. Python, Java, HTML..."/>
+        <div class="skills-tags" id="skillsTags"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="Min 8 chars, upper, number, symbol" oninput="checkStrength(this.value)"/>
+          <div id="strengthBar" style="height:4px;border-radius:4px;margin-top:6px;background:var(--border);overflow:hidden"><div id="strengthFill" style="height:100%;width:0%;transition:width 0.3s,background 0.3s;border-radius:4px"></div></div>
+          <div id="strengthLabel" style="font-size:0.72rem;margin-top:4px;color:var(--muted)"></div>
+          <div id="strengthRules" style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.7"></div>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="confirm" placeholder="Re-enter password"/>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="register()">Create Account →</button>
+
+      <div class="form-footer">
+        Already have an account? <a href="student-login.html">Login here</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let skills = [];
+
+    document.getElementById('skillInput').addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        const val = this.value.trim();
+        const valNorm = val.charAt(0).toUpperCase()+val.slice(1).toLowerCase();
+        if(val && !skills.map(s=>s.toLowerCase()).includes(val.toLowerCase())){
+          skills.push(valNorm);
+          renderSkills();
+        }
+        this.value = '';
+      }
+    });
+
+    function renderSkills(){
+      const container = document.getElementById('skillsTags');
+      container.innerHTML = skills.map((s,i) =>
+        `<span class="skill-tag">${s}<button onclick="removeSkill(${i})">×</button></span>`
+      ).join('');
+    }
+
+    function removeSkill(i){
+      skills.splice(i,1);
+      renderSkills();
+    }
+
+    function showMsg(text, type){
+      const el = document.getElementById('msg');
+      el.textContent = text; el.className = 'msg ' + type;
+      el.style.display = 'block';
+    }
+
+    function register(){
+      const name    = document.getElementById('name').value.trim();
+      const email   = document.getElementById('email').value.trim();
+      const phone   = document.getElementById('phone').value.trim();
+      const cgpa    = document.getElementById('cgpa').value.trim();
+      const course  = document.getElementById('course').value;
+      const branch  = document.getElementById('branch').value;
+      const year    = document.getElementById('year').value;
+      const college = document.getElementById('college').value.trim();
+      const pass    = document.getElementById('password').value;
+      const conf    = document.getElementById('confirm').value;
+
+      if(!name||!email||!phone||!cgpa||!course||!branch||!year||!college||!pass){
+        showMsg('Please fill in all required fields.', 'error'); return;
+      }
+      // Email format
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        showMsg('Please enter a valid email address.', 'error'); return;
+      }
+      // Phone: exactly 10 digits
+      if(!/^\d{10}$/.test(phone)){
+        showMsg('Phone number must be exactly 10 digits (numbers only).', 'error'); return;
+      }
+      // CGPA range
+      const cgpaNum = parseFloat(cgpa);
+      if(isNaN(cgpaNum) || cgpaNum < 0 || cgpaNum > 10){
+        showMsg('CGPA must be between 0 and 10.', 'error'); return;
+      }
+      // At least 1 skill
+      if(skills.length === 0){
+        showMsg('Please add at least one skill.', 'error'); return;
+      }
+      const pwCheck = validatePassword(pass);
+      if(!pwCheck.valid){
+        showMsg('Weak password: ' + pwCheck.reason, 'error'); return;
+      }
+      if(pass !== conf){
+        showMsg('Passwords do not match.', 'error'); return;
+      }
+
+      const students = JSON.parse(localStorage.getItem('ch_students') || '[]');
+      if(students.find(s => s.email === email)){
+        showMsg('This email is already registered. Please login.', 'error'); return;
+      }
+
+      const btn = document.querySelector('.submit-btn');
+      btn.textContent = 'Creating account...'; btn.disabled = true;
+
+      setTimeout(() => {
+        const student = {
+          id: Date.now().toString(),
+          name, email, phone, cgpa: cgpaNum,
+          college, course, branch, year, skills,
+          password: pass, resume: null,
+          registeredAt: new Date().toISOString()
+        };
+        students.push(student);
+        localStorage.setItem('ch_students', JSON.stringify(students));
+        showMsg('✓ Account created! Redirecting to login...', 'success');
+        setTimeout(() => { window.location.href = 'student-login.html'; }, 1200);
+      }, 500);
+    }
+
+    function validatePassword(p){
+      if(p.length < 8) return {valid:false, reason:'At least 8 characters required'};
+      if(!/[A-Z]/.test(p)) return {valid:false, reason:'Add at least one uppercase letter'};
+      if(!/[0-9]/.test(p)) return {valid:false, reason:'Add at least one number'};
+      if(!/[^A-Za-z0-9]/.test(p)) return {valid:false, reason:'Add at least one special character (!@#$%)'};
+      return {valid:true};
+    }
+    function checkStrength(p){
+      const rules = [
+        {ok: p.length>=8,      label:'8+ characters'},
+        {ok: /[A-Z]/.test(p),  label:'Uppercase letter'},
+        {ok: /[0-9]/.test(p),  label:'Number'},
+        {ok: /[^A-Za-z0-9]/.test(p), label:'Special character (!@#$%)'},
+      ];
+      const score = rules.filter(r=>r.ok).length;
+      const colors = ['#ef4444','#f97316','#f59e0b','#10b981'];
+      const labels = ['Weak','Fair','Good','Strong'];
+      const pct    = [25,50,75,100];
+      document.getElementById('strengthFill').style.width   = pct[score-1]+'%' || '0%';
+      document.getElementById('strengthFill').style.background = colors[score-1] || '#ef4444';
+      document.getElementById('strengthLabel').textContent  = score>0 ? labels[score-1] : '';
+      document.getElementById('strengthLabel').style.color  = colors[score-1] || 'var(--muted)';
+      document.getElementById('strengthRules').innerHTML    = rules.map(r=>
+        `<span style="color:${r.ok?'#10b981':'#64748b'}">${r.ok?'✓':'○'} ${r.label}</span>`
+      ).join(' &nbsp; ');
+    }
+  </script>
+</body>
+</html>

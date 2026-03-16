@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CampusHire — College Placement Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0f1e;
+      --surface: #111827;
+      --card: #161f35;
+      --border: #1e2d4a;
+      --accent: #3b82f6;
+      --accent2: #06b6d4;
+      --gold: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND GRID ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 60px;
+      background: rgba(10,15,30,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800; font-size: 1.4rem;
+      color: var(--text);
+      letter-spacing: -0.2px;
+    }
+    .logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 10px; }
+    .nav-btn {
+      padding: 9px 22px; border-radius: 8px; font-size: 0.85rem;
+      font-family: 'Nunito', sans-serif; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; border: none;
+      text-decoration: none; display: inline-block;
+    }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+    }
+    .btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 20px 60px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 100px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.3);
+      font-size: 0.78rem; color: var(--accent2);
+      font-weight: 500; letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 32px;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent2); animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    h1 {
+      font-family: 'Nunito', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 800; line-height: 1.05;
+      letter-spacing: -0.2px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    h1 .highlight {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      max-width: 540px; margin: 24px auto 0;
+      font-size: 1.1rem; color: var(--muted); line-height: 1.7;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .hero-cta {
+      display: flex; gap: 14px; margin-top: 44px; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .cta-btn {
+      padding: 14px 32px; border-radius: 10px; font-size: 0.95rem;
+      font-family: 'Nunito', sans-serif; font-weight: 500;
+      cursor: pointer; transition: all 0.25s; border: none;
+      text-decoration: none; display: inline-block;
+    }
+    .cta-primary {
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      color: #fff; box-shadow: 0 8px 32px rgba(59,130,246,0.35);
+    }
+    .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(59,130,246,0.5); }
+    .cta-secondary {
+      background: var(--card); color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .cta-secondary:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .cta-admin {
+      background: transparent; color: var(--gold);
+      border: 1px solid rgba(245,158,11,0.3);
+    }
+    .cta-admin:hover { background: rgba(245,158,11,0.08); transform: translateY(-2px); }
+    .cta-company {
+      background: transparent; color: var(--accent2);
+      border: 1px solid rgba(6,182,212,0.3);
+    }
+    .cta-company:hover { background: rgba(6,182,212,0.08); transform: translateY(-2px); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+      position: relative; z-index: 1;
+      display: flex; justify-content: center; gap: 0;
+      padding: 0 60px; margin: -20px auto 80px;
+      max-width: 860px;
+    }
+    .stat-item {
+      flex: 1; text-align: center;
+      padding: 28px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      animation: fadeUp 0.6s ease both;
+    }
+    .stat-item:first-child { border-radius: 12px 0 0 12px; }
+    .stat-item:last-child  { border-radius: 0 12px 12px 0; }
+    .stat-item:not(:first-child) { border-left: none; }
+    .stat-num {
+      font-family: 'Nunito', sans-serif;
+      font-size: 2rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── PORTAL CARDS ── */
+    .section-title {
+      text-align: center; margin-bottom: 50px;
+      animation: fadeUp 0.6s ease both;
+    }
+    .section-title h2 {
+      font-family: 'Nunito', sans-serif; font-size: 2.2rem;
+      font-weight: 700; letter-spacing: -0.3px;
+    }
+    .section-title p { color: var(--muted); margin-top: 10px; }
+
+    .cards-section {
+      position: relative; z-index: 1;
+      max-width: 1100px; margin: 0 auto 100px;
+      padding: 0 40px;
+    }
+    .cards-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .portal-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 36px 30px;
+      text-align: center; transition: all 0.3s;
+      cursor: pointer; text-decoration: none; color: inherit;
+      display: block;
+      animation: fadeUp 0.6s ease both;
+    }
+    .portal-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 60px rgba(59,130,246,0.15);
+    }
+    .card-icon {
+      width: 64px; height: 64px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; margin: 0 auto 20px;
+    }
+    .icon-blue  { background: rgba(59,130,246,0.15); }
+    .icon-cyan  { background: rgba(6,182,212,0.15); }
+    .icon-gold  { background: rgba(245,158,11,0.15); }
+    .portal-card h3 {
+      font-family: 'Nunito', sans-serif; font-size: 1.2rem;
+      font-weight: 700; margin-bottom: 10px;
+    }
+    .portal-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+    .card-tag {
+      display: inline-block; margin-top: 18px;
+      padding: 5px 14px; border-radius: 100px;
+      font-size: 0.75rem; font-weight: 500;
+    }
+    .tag-blue { background: rgba(59,130,246,0.15); color: var(--accent); }
+    .tag-cyan { background: rgba(6,182,212,0.15); color: var(--accent2); }
+    .tag-gold { background: rgba(245,158,11,0.15); color: var(--gold); }
+
+    /* ── HOW IT WORKS ── */
+    .how-section {
+      position: relative; z-index: 1;
+      max-width: 900px; margin: 0 auto 100px;
+      padding: 0 40px;
+    }
+    .steps { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: flex; gap: 28px; align-items: flex-start;
+      padding: 28px 0; border-bottom: 1px solid var(--border);
+      animation: fadeUp 0.5s ease both;
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      min-width: 44px; height: 44px; border-radius: 10px;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Nunito', sans-serif; font-weight: 800;
+      font-size: 1rem; color: var(--accent);
+    }
+    .step-content h4 {
+      font-family: 'Nunito', sans-serif; font-weight: 700;
+      font-size: 1rem; margin-bottom: 6px;
+    }
+    .step-content p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center; padding: 40px;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 0.82rem;
+    }
+
+    /* ── GLOW BLOBS ── */
+    .blob {
+      position: fixed; border-radius: 50%;
+      filter: blur(100px); pointer-events: none; z-index: 0;
+    }
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: rgba(59,130,246,0.08);
+      top: -100px; right: -100px;
+    }
+    .blob-2 {
+      width: 400px; height: 400px;
+      background: rgba(6,182,212,0.06);
+      bottom: 200px; left: -100px;
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .stats-strip { flex-direction: column; padding: 0 20px; }
+      .stat-item { border-radius: 0 !important; border-left: 1px solid var(--border) !important; border-top: none !important; }
+      .stat-item:first-child { border-radius: 12px 12px 0 0 !important; border-top: 1px solid var(--border) !important; }
+      .stat-item:last-child  { border-radius: 0 0 12px 12px !important; }
+      .cards-grid { grid-template-columns: 1fr; padding: 0 20px; }
+      .cards-section, .how-section { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="logo">Campus<span>Hire</span></div>
+
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">✦ Your College Placement Portal</div>
+    <h1>Get <span class="highlight">Placed</span> at<br/>Your Dream Company</h1>
+    <p class="hero-sub">
+      The official placement portal for students. Browse job openings,
+      upload your resume, and track your applications — all in one place.
+    </p>
+    <div class="hero-cta">
+      <a href="student-register.html" class="cta-btn cta-primary">Register as Student →</a>
+      <a href="student-login.html"    class="cta-btn cta-secondary">Student Login</a>
+      <a href="company-register.html" class="cta-btn cta-company">🏢 Company Portal</a>
+      <a href="admin-login.html"      class="cta-btn cta-admin">⚙ Admin Panel</a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-strip">
+    <div class="stat-item" style="animation-delay:0.1s">
+      <div class="stat-num" id="s1">350+</div>
+      <div class="stat-label">Registered Students</div>
+    </div>
+    <div class="stat-item" style="animation-delay:0.2s">
+      <div class="stat-num" id="s2">48</div>
+      <div class="stat-label">Companies Hiring</div>
+    </div>
+    <div class="stat-item" style="animation-delay:0.3s">
+      <div class="stat-num" id="s3">210</div>
+      <div class="stat-label">Students Placed</div>
+    </div>
+    <div class="stat-item" style="animation-delay:0.4s">
+      <div class="stat-num" id="s4">28 LPA</div>
+      <div class="stat-label">Highest Package</div>
+    </div>
+  </div>
+
+  <!-- PORTAL CARDS -->
+  <section class="cards-section">
+    <div class="section-title">
+      <h2>Choose Your Portal</h2>
+      <p>Three different dashboards for Students, Companies, and Admins</p>
+    </div>
+    <div class="cards-grid">
+      <a href="student-register.html" class="portal-card" style="animation-delay:0.1s">
+        <div class="card-icon icon-blue">🎓</div>
+        <h3>Student Portal</h3>
+        <p>Create your profile, upload resume, browse job listings, and track all your applications.</p>
+        <span class="card-tag tag-blue">Register / Login →</span>
+      </a>
+      <a href="company-register.html" class="portal-card" style="animation-delay:0.2s">
+        <div class="card-icon icon-cyan">🏢</div>
+        <h3>Company Portal</h3>
+        <p>Register your company, post job openings, set eligibility criteria, and view student applicants.</p>
+        <span class="card-tag tag-cyan">Register / Login →</span>
+      </a>
+      <a href="admin-login.html" class="portal-card" style="animation-delay:0.3s">
+        <div class="card-icon icon-gold">⚙️</div>
+        <h3>Admin Panel</h3>
+        <p>Manage students, post jobs, review applications, and track overall placement statistics.</p>
+        <span class="card-tag tag-gold">Admin Login →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section">
+    <div class="section-title">
+      <h2>How It Works</h2>
+      <p>Get placed in 4 simple steps</p>
+    </div>
+    <div class="steps">
+      <div class="step" style="animation-delay:0.1s">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h4>Create Your Profile</h4>
+          <p>Register with your college email. Add your branch, CGPA, and skills to build a strong profile.</p>
+        </div>
+      </div>
+      <div class="step" style="animation-delay:0.2s">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h4>Upload Your Resume</h4>
+          <p>Upload your latest resume in PDF or DOCX format so companies can review your work.</p>
+        </div>
+      </div>
+      <div class="step" style="animation-delay:0.3s">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h4>Browse & Apply for Jobs</h4>
+          <p>See all open positions from visiting companies. Check eligibility and apply with one click.</p>
+        </div>
+      </div>
+      <div class="step" style="animation-delay:0.4s">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h4>Track Your Applications</h4>
+          <p>Watch your application status change from Applied → Shortlisted → Selected in real time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    © 2025 CampusHire — College Placement Portal &nbsp;·&nbsp; Built for Students, by Students
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Company Register — CampusHire</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#0a0f1e;--surface:#111827;--card:#161f35;--border:#1e2d4a;--accent2:#06b6d4;--text:#e2e8f0;--muted:#64748b;--success:#10b981;--danger:#ef4444;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(6,182,212,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(6,182,212,0.04) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;}
+    nav{position:fixed;top:0;width:100%;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:18px 60px;background:rgba(10,15,30,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+    .logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.4rem;color:var(--text);text-decoration:none;}
+    .logo span{color:var(--accent2);}
+    .nav-link{color:var(--muted);text-decoration:none;font-size:0.88rem;}
+    .nav-link:hover{color:var(--text);}
+    .page{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 20px 60px;}
+    .form-card{background:var(--card);border:1px solid rgba(6,182,212,0.2);border-radius:20px;padding:44px 48px;width:100%;max-width:580px;animation:fadeUp 0.5s ease both;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .form-header{margin-bottom:28px;}
+    .form-header h2{font-family:'Nunito',sans-serif;font-size:1.8rem;font-weight:900;}
+    .form-header p{color:var(--muted);margin-top:8px;font-size:0.9rem;line-height:1.5;}
+    .notice{background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.25);border-radius:10px;padding:12px 16px;font-size:0.82rem;color:var(--accent2);margin-bottom:24px;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .form-group{margin-bottom:18px;}
+    .form-group label{display:block;font-size:0.78rem;color:var(--muted);margin-bottom:7px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.92rem;transition:border-color 0.2s,box-shadow 0.2s;}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent2);box-shadow:0 0 0 3px rgba(6,182,212,0.12);}
+    .form-group input::placeholder,.form-group textarea::placeholder{color:var(--muted);}
+    .form-group textarea{resize:vertical;min-height:80px;}
+    .submit-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent2),#0891b2);color:#fff;border:none;border-radius:10px;font-size:0.95rem;font-family:'Nunito',sans-serif;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 8px 24px rgba(6,182,212,0.25);}
+    .submit-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(6,182,212,0.4);}
+    .form-footer{text-align:center;margin-top:20px;font-size:0.85rem;color:var(--muted);}
+    .form-footer a{color:var(--accent2);text-decoration:none;}
+    .msg{padding:12px 16px;border-radius:8px;font-size:0.85rem;margin-bottom:18px;display:none;}
+    .msg.success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--success);}
+    .msg.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--danger);}
+    @media(max-width:600px){nav{padding:16px 20px;}.form-card{padding:28px 20px;}.form-row{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">Campus<span>Hire</span></a>
+    <a href="company-login.html" class="nav-link">Already registered? Login →</a>
+  </nav>
+  <div class="page">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>Register Your Company 🏢</h2>
+        <p>Submit your company details. Our admin will verify and approve your account before you can post jobs.</p>
+      </div>
+      <div class="notice">⏳ After registration, your account will be reviewed by the Placement Cell before activation.</div>
+      <div class="msg" id="msg"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Company Name</label>
+          <input type="text" id="cName" placeholder="e.g. Google India"/>
+        </div>
+        <div class="form-group">
+          <label>Industry</label>
+          <select id="cIndustry">
+            <option value="">Select Industry</option>
+            <option>Information Technology</option>
+            <option>Finance & Banking</option>
+            <option>Consulting</option>
+            <option>E-Commerce</option>
+            <option>Manufacturing</option>
+            <option>Healthcare</option>
+            <option>Education</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Contact Person Name</label>
+          <input type="text" id="cContact" placeholder="HR Manager name"/>
+        </div>
+        <div class="form-group">
+          <label>Designation</label>
+          <input type="text" id="cDesig" placeholder="e.g. HR Manager"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Official Email</label>
+          <input type="email" id="cEmail" placeholder="hr@company.com"/>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="cPhone" placeholder="9876543210"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Company Website</label>
+          <input type="text" id="cWebsite" placeholder="https://company.com"/>
+        </div>
+        <div class="form-group">
+          <label>Headquarters</label>
+          <input type="text" id="cHQ" placeholder="e.g. Bangalore"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>About Company</label>
+        <textarea id="cAbout" placeholder="Brief description of your company, what you do, culture..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="cPass" placeholder="Min 8 chars, uppercase, number, symbol" oninput="checkStrength(this.value)"/><div id="strengthBar" style="height:4px;border-radius:4px;margin-top:6px;background:rgba(255,255,255,0.1);overflow:hidden"><div id="strengthFill" style="height:100%;width:0%;transition:width 0.3s,background 0.3s;border-radius:4px"></div></div><div id="strengthLabel" style="font-size:0.72rem;margin-top:3px;color:var(--muted)"></div>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <input type="password" id="cConf" placeholder="Re-enter password"/>
+        </div>
+      </div>
+      <button class="submit-btn" onclick="registerCompany()">Submit for Verification →</button>
+      <div class="form-footer">Already approved? <a href="company-login.html">Login here</a></div>
+    </div>
+  </div>
+  <script>
+    function showMsg(t,c){const e=document.getElementById('msg');e.textContent=t;e.className='msg '+c;e.style.display='block';}
+    function registerCompany(){
+      const name    = document.getElementById('cName').value.trim();
+      const industry= document.getElementById('cIndustry').value;
+      const contact = document.getElementById('cContact').value.trim();
+      const desig   = document.getElementById('cDesig').value.trim();
+      const email   = document.getElementById('cEmail').value.trim();
+      const phone   = document.getElementById('cPhone').value.trim();
+      const website = document.getElementById('cWebsite').value.trim();
+      const hq      = document.getElementById('cHQ').value.trim();
+      const about   = document.getElementById('cAbout').value.trim();
+      const pass    = document.getElementById('cPass').value;
+      const conf    = document.getElementById('cConf').value;
+
+      if(!name||!industry||!contact||!email||!phone||!pass){showMsg('Please fill in all required fields.','error');return;}
+      const pwv=validatePassword(pass);
+      if(!pwv.valid){showMsg('Weak password: '+pwv.reason,'error');return;}
+      if(pass!==conf){showMsg('Passwords do not match.','error');return;}
+
+      const companies = JSON.parse(localStorage.getItem('ch_companies')||'[]');
+      if(companies.find(c=>c.email===email)){showMsg('This email is already registered.','error');return;}
+
+      companies.push({
+        id:'co_'+Date.now(), name, industry, contact, desig, email, phone,
+        website, hq, about, password:pass,
+        status:'pending', // pending | approved | rejected
+        registeredAt: new Date().toISOString()
+      });
+      localStorage.setItem('ch_companies', JSON.stringify(companies));
+      showMsg('✓ Registration submitted! Please wait for admin approval.','success');
+      setTimeout(()=>{ window.location.href='company-login.html'; }, 2000);
+    }
+
+    function validatePassword(p){
+      if(p.length<8) return {valid:false,reason:'At least 8 characters required'};
+      if(!/[A-Z]/.test(p)) return {valid:false,reason:'Add at least one uppercase letter'};
+      if(!/[0-9]/.test(p)) return {valid:false,reason:'Add at least one number'};
+      if(!/[^A-Za-z0-9]/.test(p)) return {valid:false,reason:'Add at least one special character'};
+      return {valid:true};
+    }
+    function checkStrength(p){
+      const rules=[{ok:p.length>=8},{ok:/[A-Z]/.test(p)},{ok:/[0-9]/.test(p)},{ok:/[^A-Za-z0-9]/.test(p)}];
+      const score=rules.filter(r=>r.ok).length;
+      const c=['#ef4444','#f97316','#f59e0b','#10b981'];
+      const l=['Weak','Fair','Good','Strong'];
+      document.getElementById('strengthFill').style.width=([25,50,75,100][score-1]||0)+'%';
+      document.getElementById('strengthFill').style.background=c[score-1]||'#ef4444';
+      document.getElementById('strengthLabel').textContent=score>0?l[score-1]:'';
+      document.getElementById('strengthLabel').style.color=c[score-1]||'var(--muted)';
+    }
+  </script>
+</body>
+</html>

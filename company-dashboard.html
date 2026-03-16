@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Company Dashboard — CampusHire</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#0a0f1e;--surface:#111827;--card:#161f35;--border:#1e2d4a;--accent:#3b82f6;--accent2:#06b6d4;--gold:#f59e0b;--text:#e2e8f0;--muted:#64748b;--success:#10b981;--danger:#ef4444;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(6,182,212,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(6,182,212,0.04) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;}
+
+    /* SIDEBAR */
+    .sidebar{position:fixed;left:0;top:0;width:240px;height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;z-index:50;display:flex;flex-direction:column;}
+    .logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.2rem;color:var(--text);padding:0 24px 20px;border-bottom:1px solid var(--border);margin-bottom:20px;}
+    .logo span{color:var(--accent2);}
+    .logo small{display:block;font-size:0.7rem;color:var(--accent2);font-weight:600;margin-top:2px;letter-spacing:1px;text-transform:uppercase;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:12px 24px;color:var(--muted);font-size:0.88rem;cursor:pointer;transition:all 0.2s;border-left:2px solid transparent;}
+    .nav-item:hover,.nav-item.active{color:var(--text);background:rgba(6,182,212,0.08);border-left-color:var(--accent2);}
+    .nav-item .icon{font-size:1.1rem;width:20px;text-align:center;}
+    .sidebar-footer{margin-top:auto;padding:20px 24px;border-top:1px solid var(--border);}
+    .co-name{font-size:0.85rem;font-weight:700;color:var(--text);}
+    .co-role{font-size:0.75rem;color:var(--muted);margin-top:2px;}
+    .logout-btn{margin-top:12px;width:100%;padding:9px;background:transparent;color:var(--danger);border:1px solid rgba(239,68,68,0.3);border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.82rem;cursor:pointer;}
+    .logout-btn:hover{background:rgba(239,68,68,0.08);}
+
+    /* MAIN */
+    .main{margin-left:240px;min-height:100vh;padding:40px;position:relative;z-index:1;}
+    .page-section{display:none;}
+    .page-section.active{display:block;animation:fadeIn 0.3s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .page-title{font-family:'Nunito',sans-serif;font-size:1.6rem;font-weight:900;margin-bottom:6px;}
+    .page-sub{color:var(--muted);font-size:0.88rem;margin-bottom:28px;}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+    .stat-card .label{font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;}
+    .stat-card .value{font-family:'Nunito',sans-serif;font-size:1.8rem;font-weight:900;margin-top:6px;color:var(--accent2);}
+
+    /* CARD */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:24px;}
+    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+    .card-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;}
+
+    /* FORM */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .form-group{margin-bottom:16px;}
+    .form-group label{display:block;font-size:0.75rem;color:var(--muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.88rem;transition:border-color 0.2s;}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent2);}
+    .form-group input::placeholder,.form-group textarea::placeholder{color:var(--muted);}
+    .form-group textarea{resize:vertical;min-height:80px;}
+
+    /* BUTTONS */
+    .btn{padding:9px 20px;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;}
+    .btn-cyan{background:linear-gradient(135deg,var(--accent2),#0891b2);color:#fff;}
+    .btn-cyan:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(6,182,212,0.3);}
+    .btn-danger{background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);}
+    .btn-wide{width:100%;padding:13px;font-size:0.92rem;}
+
+    /* TABLE */
+    table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+    th{text-align:left;padding:10px 14px;color:var(--muted);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);}
+    td{padding:12px 14px;border-bottom:1px solid rgba(30,45,74,0.5);vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:rgba(6,182,212,0.02);}
+
+    /* BADGE */
+    .badge{padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:700;}
+    .badge-green{background:rgba(16,185,129,0.12);color:var(--success);}
+    .badge-blue{background:rgba(59,130,246,0.12);color:var(--accent);}
+    .badge-gold{background:rgba(245,158,11,0.12);color:var(--gold);}
+    .badge-red{background:rgba(239,68,68,0.1);color:var(--danger);}
+    .badge-cyan{background:rgba(6,182,212,0.12);color:var(--accent2);}
+    .badge-purple{background:rgba(139,92,246,0.12);color:#a78bfa;}
+
+    /* JOB LIST */
+    .job-item{padding:16px 0;border-bottom:1px solid var(--border);}
+    .job-item:last-child{border-bottom:none;}
+    .job-top{display:flex;justify-content:space-between;align-items:flex-start;}
+    .job-name{font-weight:800;font-size:0.95rem;}
+    .job-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+    .job-tag{padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:700;}
+
+    /* MSG */
+    .msg{padding:11px 14px;border-radius:8px;font-size:0.83rem;margin-bottom:16px;display:none;}
+    .msg.success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--success);}
+    .msg.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--danger);}
+
+    .empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
+    .empty-state .ei{font-size:2.5rem;margin-bottom:12px;}
+
+    /* status select */
+    .status-sel{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px;font-size:0.78rem;font-family:'Nunito',sans-serif;cursor:pointer;}
+
+    @media(max-width:900px){.sidebar{width:200px;}.main{margin-left:200px;padding:24px;}.stats-row{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:650px){.sidebar{display:none;}.main{margin-left:0;}}
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">Campus<span>Hire</span><small>Company Portal</small></div>
+    <div class="nav-item active" onclick="showSection('overview')"><span class="icon">📊</span> Overview</div>
+    <div class="nav-item" onclick="showSection('post-job')"><span class="icon">➕</span> Post a Job</div>
+    <div class="nav-item" onclick="showSection('my-jobs')"><span class="icon">💼</span> My Jobs</div>
+    <div class="nav-item" onclick="showSection('applicants')"><span class="icon">👥</span> Applicants</div>
+    <div class="nav-item" onclick="showSection('profile')"><span class="icon">🏢</span> Company Profile</div>
+    <div class="sidebar-footer">
+      <div class="co-name" id="sidebarCoName">Loading...</div>
+      <div class="co-role" id="sidebarIndustry">Company</div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <section class="page-section active" id="sec-overview">
+      <div class="page-title" id="welcomeTitle">Welcome 👋</div>
+      <div class="page-sub">Your company's hiring overview</div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="label">Jobs Posted</div><div class="value" id="ovJobs">0</div></div>
+        <div class="stat-card"><div class="label">Total Applicants</div><div class="value" id="ovApps">0</div></div>
+        <div class="stat-card"><div class="label">Shortlisted</div><div class="value" id="ovShort">0</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">📋 Recent Applications</span></div>
+        <div id="ovRecentApps"></div>
+      </div>
+    </section>
+
+    <!-- POST JOB -->
+    <section class="page-section" id="sec-post-job">
+      <div class="page-title">Post a Job</div>
+      <div class="page-sub">Create a new job opening for students to apply</div>
+      <div class="card" style="max-width:620px">
+        <div class="msg" id="jobMsg"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Job Role / Title</label><input id="jRole" placeholder="e.g. Software Engineer Intern"/></div>
+          <div class="form-group"><label>Package (LPA)</label><input id="jPackage" placeholder="e.g. 12 LPA"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Location</label><input id="jLocation" placeholder="e.g. Bangalore"/></div>
+          <div class="form-group">
+            <label>Job Type</label>
+            <select id="jType"><option>Full Time</option><option>Internship</option><option>Contract</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Minimum CGPA</label><input type="number" id="jCGPA" placeholder="e.g. 7.5" step="0.1" min="0" max="10"/></div>
+          <div class="form-group"><label>Last Date to Apply</label><input type="date" id="jDeadline"/></div>
+        </div>
+        <div class="form-group"><label>Required Skills (comma separated)</label><input id="jSkills" placeholder="e.g. Python, DSA, SQL"/></div>
+        <div class="form-group"><label>Job Description</label><textarea id="jDesc" placeholder="Describe the role, responsibilities, what you're looking for..."></textarea></div>
+        <button class="btn btn-cyan btn-wide" id="postJobBtn" onclick="postJob()">Post Job →</button>
+      </div>
+    </section>
+
+    <!-- MY JOBS -->
+    <section class="page-section" id="sec-my-jobs">
+      <div class="page-title">My Job Postings</div>
+      <div class="page-sub">All jobs posted by your company</div>
+      <div class="card">
+        <div id="myJobsList"></div>
+      </div>
+    </section>
+
+    <!-- APPLICANTS -->
+    <section class="page-section" id="sec-applicants">
+      <div class="page-title">Applicants</div>
+      <div class="page-sub">Students who applied to your job postings</div>
+      <div class="card">
+        <div style="margin-bottom:16px">
+          <label style="font-size:0.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Filter by Job</label>
+          <select id="jobFilter" onchange="renderApplicants()" style="margin-top:6px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.85rem;width:100%;max-width:360px;">
+            <option value="all">All Jobs</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Student</th><th>College</th><th>Branch</th><th>CGPA</th><th>Job Applied</th><th>Date</th><th>Resume</th><th>Status</th></tr></thead>
+            <tbody id="applicantsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="page-section" id="sec-profile">
+      <div class="page-title">Company Profile</div>
+      <div class="page-sub">Your company details visible to students</div>
+      <div class="card" style="max-width:540px" id="profileCard"></div>
+    </section>
+
+  </main>
+
+  <script>
+    const auth = JSON.parse(localStorage.getItem('ch_loggedIn')||'null');
+    if(!auth||auth.role!=='company'){ window.location.href='company-login.html'; }
+    if(auth && auth.ts && (Date.now()-auth.ts > 8*60*60*1000)){
+      localStorage.removeItem('ch_loggedIn'); window.location.href='company-login.html';
+    }
+
+    // Always re-check status from storage — not just the session
+    function checkAccess(){
+      const co = me();
+      if(!co){ window.location.href='company-login.html'; return false; }
+      if(co.status==='rejected'){
+        localStorage.removeItem('ch_loggedIn');
+        alert('❌ Your company registration has been rejected by the admin. Please contact the placement cell.');
+        window.location.href='index.html';
+        return false;
+      }
+      if(co.status==='pending'){
+        localStorage.removeItem('ch_loggedIn');
+        alert('⏳ Your account is still pending admin approval.');
+        window.location.href='company-login.html';
+        return false;
+      }
+      return true;
+    }
+
+    const COs  = ()=>JSON.parse(localStorage.getItem('ch_companies')||'[]');
+    const JOBS = ()=>JSON.parse(localStorage.getItem('ch_jobs')||'[]');
+    const APPS = ()=>JSON.parse(localStorage.getItem('ch_apps')||'[]');
+    const STUDS= ()=>JSON.parse(localStorage.getItem('ch_students')||'[]');
+    const me   = ()=>COs().find(c=>c.id===auth.id);
+
+    function showSection(id){
+      if(!checkAccess()) return;
+      document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      document.getElementById('sec-'+id).classList.add('active');
+      const idx=['overview','post-job','my-jobs','applicants','profile'].indexOf(id);
+      document.querySelectorAll('.nav-item')[idx].classList.add('active');
+      render(id);
+    }
+
+    function render(id){
+      if(id==='overview')   renderOverview();
+      if(id==='my-jobs')    renderMyJobs();
+      if(id==='applicants') renderApplicants();
+      if(id==='profile')    renderProfile();
+    }
+
+    function myJobs(){ return JOBS().filter(j=>j.companyId===auth.id); }
+    function myApps(){
+      const jobIds = myJobs().map(j=>j.id);
+      return APPS().filter(a=>jobIds.includes(a.jobId));
+    }
+
+    function renderOverview(){
+      const co = me();
+      document.getElementById('welcomeTitle').textContent = `Welcome, ${co.name} 👋`;
+      document.getElementById('sidebarCoName').textContent = co.name;
+      document.getElementById('sidebarIndustry').textContent = co.industry;
+      const apps = myApps();
+      document.getElementById('ovJobs').textContent  = myJobs().length;
+      document.getElementById('ovApps').textContent  = apps.length;
+      document.getElementById('ovShort').textContent = apps.filter(a=>a.status==='Shortlisted'||a.status==='Selected').length;
+      const studs = STUDS();
+      const recent = apps.slice(-5).reverse();
+      if(!recent.length){
+        document.getElementById('ovRecentApps').innerHTML='<div class="empty-state"><div class="ei">📋</div><p>No applications yet. Post a job to get started!</p></div>';
+        return;
+      }
+      const sc={'Applied':'blue','Under Review':'purple','Shortlisted':'gold','Selected':'green','Rejected':'red'};
+      document.getElementById('ovRecentApps').innerHTML=`<table><thead><tr><th>Student</th><th>CGPA</th><th>Job</th><th>Date</th><th>Status</th></tr></thead><tbody>`+
+        recent.map(a=>{
+          const st=studs.find(s=>s.id===a.studentId)||{name:'Unknown',cgpa:'—'};
+          return `<tr><td><strong>${st.name}</strong></td><td><span class="badge badge-green">${st.cgpa}</span></td>
+            <td style="color:var(--muted);font-size:0.8rem">${a.role}</td>
+            <td style="color:var(--muted);font-size:0.75rem">${new Date(a.appliedAt).toLocaleDateString()}</td>
+            <td><span class="badge badge-${sc[a.status]||'blue'}">${a.status}</span></td></tr>`;
+        }).join('')+'</tbody></table>';
+    }
+
+    function renderMyJobs(){
+      const jobs = myJobs();
+      if(!jobs.length){
+        document.getElementById('myJobsList').innerHTML='<div class="empty-state"><div class="ei">💼</div><p>No jobs posted yet. Go to "Post a Job" to add one!</p></div>';
+        return;
+      }
+      const apps = myApps();
+      document.getElementById('myJobsList').innerHTML = jobs.map(j=>{
+        const count = apps.filter(a=>a.jobId===j.id).length;
+        return `<div class="job-item">
+          <div class="job-top">
+            <div>
+              <div class="job-name">${j.role}</div>
+              <div class="job-meta">
+                <span class="job-tag badge-green">💰 ${j.package}</span>
+                <span class="job-tag badge-cyan">📍 ${j.location}</span>
+                <span class="job-tag badge-blue">${j.type}</span>
+                <span class="job-tag badge-gold">Min CGPA: ${j.minCGPA}</span>
+                ${j.deadline?`<span class="job-tag badge-purple">Deadline: ${j.deadline}</span>`:''}
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="badge badge-cyan">${count} applicant${count!==1?'s':''}</span>
+              <button class="btn btn-danger" style="padding:5px 12px;font-size:0.75rem" onclick="deleteJob('${j.id}')">Delete</button>
+            </div>
+          </div>
+          ${j.description?`<p style="color:var(--muted);font-size:0.82rem;margin-top:10px;line-height:1.5">${j.description}</p>`:''}
+        </div>`;
+      }).join('');
+    }
+
+    function deleteJob(id){
+      if(!confirm('Delete this job posting?')) return;
+      localStorage.setItem('ch_jobs', JSON.stringify(JOBS().filter(j=>j.id!==id)));
+      renderMyJobs();
+    }
+
+    function renderApplicants(){
+      const jobs = myJobs();
+      // Populate filter
+      const sel = document.getElementById('jobFilter');
+      const cur = sel.value;
+      sel.innerHTML='<option value="all">All Jobs</option>'+jobs.map(j=>`<option value="${j.id}">${j.role}</option>`).join('');
+      sel.value = cur;
+
+      const filter = sel.value;
+      let apps = myApps();
+      if(filter!=='all') apps = apps.filter(a=>a.jobId===filter);
+      const studs = STUDS();
+      if(!apps.length){
+        document.getElementById('applicantsBody').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">No applicants yet.</td></tr>';
+        return;
+      }
+      const sc={'Applied':'blue','Under Review':'purple','Shortlisted':'gold','Selected':'green','Rejected':'red'};
+      document.getElementById('applicantsBody').innerHTML = apps.map(a=>{
+        const st=studs.find(s=>s.id===a.studentId)||{name:'Unknown',branch:'—',cgpa:'—',resume:null};
+        return `<tr>
+          <td><strong>${st.name}</strong><br/><span style="color:var(--muted);font-size:0.75rem">${st.email||''}</span></td>
+          <td style="font-size:0.78rem">${st.college||'—'}</td>
+          <td>${st.branch}</td>
+          <td><span class="badge badge-green">${st.cgpa}</span></td>
+          <td style="font-size:0.8rem;color:var(--muted)">${a.role}</td>
+          <td style="font-size:0.75rem;color:var(--muted)">${new Date(a.appliedAt).toLocaleDateString()}</td>
+          <td>${st.resume?`<span class="badge badge-green">✓ Available</span>`:`<span class="badge badge-red">None</span>`}</td>
+          <td>
+            <select class="status-sel" onchange="updateStatus('${a.id}',this.value)">
+              ${['Applied','Under Review','Shortlisted','Selected','Rejected'].map(s=>`<option ${a.status===s?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </td></tr>`;
+      }).join('');
+    }
+
+    function updateStatus(appId, newStatus){
+      const list = APPS();
+      const idx  = list.findIndex(a=>a.id===appId);
+      if(idx>-1){ list[idx].status=newStatus; localStorage.setItem('ch_apps',JSON.stringify(list)); console.log('Status updated:',appId,'→',newStatus); }
+      else { console.error('App not found:',appId); }
+    }
+
+    function renderProfile(){
+      const co = me();
+      document.getElementById('profileCard').innerHTML=`
+        <div class="card-header"><span class="card-title">🏢 ${co.name}</span><span class="badge badge-green">✓ Verified</span></div>
+        ${[['Industry',co.industry],['Contact',co.contact],['Designation',co.desig],['Email',co.email],['Phone',co.phone],['Website',co.website||'—'],['HQ',co.hq||'—']].map(([l,v])=>`
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:0.88rem">
+          <span style="color:var(--muted)">${l}</span><span style="font-weight:600">${v}</span>
+        </div>`).join('')}
+        ${co.about?`<p style="color:var(--muted);font-size:0.85rem;margin-top:16px;line-height:1.6">${co.about}</p>`:''}`;
+    }
+
+    function postJob(){
+      const role    = document.getElementById('jRole').value.trim();
+      const pkg     = document.getElementById('jPackage').value.trim();
+      const loc     = document.getElementById('jLocation').value.trim();
+      const type    = document.getElementById('jType').value;
+      const cgpa    = document.getElementById('jCGPA').value;
+      const deadline= document.getElementById('jDeadline').value;
+      const skills  = document.getElementById('jSkills').value.trim();
+      const desc    = document.getElementById('jDesc').value.trim();
+      const el      = document.getElementById('jobMsg');
+      const co      = me();
+
+      if(!role||!pkg||!loc||!cgpa){
+        el.textContent='Please fill in all required fields.';el.className='msg error';el.style.display='block';return;
+      }
+      const jobs = JOBS();
+      jobs.push({
+        id:'j_'+Date.now(), company:co.name, companyId:auth.id,
+        role, package:pkg, location:loc, type, minCGPA:parseFloat(cgpa),
+        deadline, skills:skills.split(',').map(s=>s.trim()).filter(Boolean),
+        description:desc, postedAt:new Date().toISOString()
+      });
+      const btn=document.getElementById('postJobBtn');
+      btn.textContent='Posting...'; btn.disabled=true;
+      setTimeout(()=>{
+        localStorage.setItem('ch_jobs',JSON.stringify(jobs));
+        console.log('Job posted:',role,'by',co.name);
+        el.textContent='✓ Job posted successfully!';el.className='msg success';el.style.display='block';
+        ['jRole','jPackage','jLocation','jCGPA','jDeadline','jSkills','jDesc'].forEach(id=>document.getElementById(id).value='');
+        btn.textContent='Post Job →'; btn.disabled=false;
+        setTimeout(()=>{el.style.display='none';},3000);
+      },500);
+    }
+
+    function logout(){ localStorage.removeItem('ch_loggedIn'); window.location.href='index.html'; }
+
+    // Init — verify access immediately on page load
+    if(checkAccess()){
+      const initCo = me();
+      if(initCo){
+        document.getElementById('sidebarCoName').textContent = initCo.name;
+        document.getElementById('sidebarIndustry').textContent = initCo.industry;
+        renderOverview();
+      }
+    }
+  </script>
+</body>
+</html>

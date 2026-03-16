@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — CampusHire</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#0a0f1e;--surface:#111827;--card:#161f35;--border:#1e2d4a;--accent:#3b82f6;--gold:#f59e0b;--text:#e2e8f0;--muted:#64748b;--success:#10b981;--danger:#ef4444;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;}
+    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;}
+    .sidebar{position:fixed;left:0;top:0;width:240px;height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;z-index:50;display:flex;flex-direction:column;}
+    .logo{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.2rem;color:var(--text);padding:0 24px 24px;border-bottom:1px solid var(--border);margin-bottom:20px;}
+    .logo span{color:var(--gold);}
+    .logo small{display:block;font-size:0.7rem;color:var(--gold);font-family:'Nunito',sans-serif;font-weight:400;margin-top:2px;letter-spacing:1px;text-transform:uppercase;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:12px 24px;color:var(--muted);font-size:0.88rem;cursor:pointer;transition:all 0.2s;border-left:2px solid transparent;}
+    .nav-item:hover,.nav-item.active{color:var(--text);background:rgba(245,158,11,0.08);border-left-color:var(--gold);}
+    .nav-item .icon{font-size:1.1rem;width:20px;text-align:center;}
+    .sidebar-footer{margin-top:auto;padding:20px 24px;border-top:1px solid var(--border);}
+    .logout-btn{width:100%;padding:9px;background:transparent;color:var(--danger);border:1px solid rgba(239,68,68,0.3);border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.82rem;cursor:pointer;transition:all 0.2s;}
+    .logout-btn:hover{background:rgba(239,68,68,0.08);}
+    .main{margin-left:240px;min-height:100vh;padding:40px;position:relative;z-index:1;}
+    .page-section{display:none;}
+    .page-section.active{display:block;animation:fadeIn 0.3s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .page-title{font-family:'Nunito',sans-serif;font-size:1.6rem;font-weight:800;letter-spacing:-0.5px;margin-bottom:8px;}
+    .page-sub{color:var(--muted);font-size:0.88rem;margin-bottom:32px;}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+    .stat-card .label{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
+    .stat-card .value{font-family:'Nunito',sans-serif;font-size:1.8rem;font-weight:800;margin-top:6px;color:var(--gold);}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:24px;}
+    .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+    .card-title{font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;}
+    .action-btn{padding:8px 18px;border-radius:8px;font-family:'Nunito',sans-serif;font-size:0.82rem;cursor:pointer;border:none;transition:all 0.2s;}
+    .btn-gold{background:var(--gold);color:#000;font-weight:700;}
+    .btn-gold:hover{background:#d97706;}
+    .btn-danger{background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);}
+    .btn-danger:hover{background:rgba(239,68,68,0.2);}
+    .btn-blue{background:rgba(59,130,246,0.1);color:var(--accent);border:1px solid rgba(59,130,246,0.2);}
+    .btn-blue:hover{background:rgba(59,130,246,0.2);}
+    table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+    th{text-align:left;padding:10px 14px;color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);}
+    td{padding:12px 14px;border-bottom:1px solid rgba(30,45,74,0.5);vertical-align:middle;}
+    tr:hover td{background:rgba(59,130,246,0.03);}
+    tr:last-child td{border-bottom:none;}
+    .badge{padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;}
+    .badge-blue{background:rgba(59,130,246,0.12);color:var(--accent);}
+    .badge-gold{background:rgba(245,158,11,0.12);color:var(--gold);}
+    .badge-green{background:rgba(16,185,129,0.12);color:var(--success);}
+    .badge-red{background:rgba(239,68,68,0.1);color:var(--danger);}
+    .badge-purple{background:rgba(139,92,246,0.12);color:#a78bfa;}
+    /* Post Job Form */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .form-group{margin-bottom:16px;}
+    .form-group label{display:block;font-size:0.78rem;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;}
+    .form-group input,.form-group select,.form-group textarea{
+      width:100%;padding:11px 14px;background:var(--surface);border:1px solid var(--border);
+      border-radius:8px;color:var(--text);font-family:'Nunito',sans-serif;font-size:0.88rem;
+      transition:border-color 0.2s;
+    }
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--gold);}
+    .form-group input::placeholder{color:var(--muted);}
+    .form-group textarea{resize:vertical;min-height:80px;}
+    .msg{padding:10px 14px;border-radius:8px;font-size:0.82rem;margin-bottom:16px;display:none;}
+    .msg.success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--success);}
+    .msg.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--danger);}
+    .empty-state{text-align:center;padding:40px;color:var(--muted);font-size:0.85rem;}
+    select.status-sel{
+      background:var(--surface);border:1px solid var(--border);color:var(--text);
+      padding:4px 10px;border-radius:6px;font-size:0.78rem;cursor:pointer;
+    }
+    @media(max-width:900px){.sidebar{width:200px;}.main{margin-left:200px;padding:24px;}.stats-row{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:650px){.sidebar{display:none;}.main{margin-left:0;}}
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">Campus<span>Hire</span><small>Admin Panel</small></div>
+    <div class="nav-item active" onclick="showSection('overview')"><span class="icon">📊</span> Overview</div>
+    <div class="nav-item" onclick="showSection('companies')"><span class="icon">🏢</span> Companies <span id="pendingBadge" style="display:none;margin-left:auto;background:#ef4444;color:#fff;font-size:0.65rem;padding:1px 7px;border-radius:100px;font-weight:800"></span></div>
+    <div class="nav-item" onclick="showSection('students')"><span class="icon">🎓</span> Students</div>
+    <div class="nav-item" onclick="showSection('post-job')"><span class="icon">➕</span> Post Job</div>
+    <div class="nav-item" onclick="showSection('jobs')"><span class="icon">💼</span> Manage Jobs</div>
+    <div class="nav-item" onclick="showSection('applications')"><span class="icon">📋</span> Applications</div>
+    <div class="nav-item" onclick="showSection('recruited')"><span class="icon">🏆</span> Recruited</div>
+    <div class="nav-item" onclick="showSection('analytics')"><span class="icon">📈</span> Analytics</div>
+    <div class="sidebar-footer">
+      <div style="font-size:0.82rem;font-weight:500;color:var(--gold)">⚙️ Admin</div>
+      <div style="font-size:0.75rem;color:var(--muted);margin-top:2px">Placement Cell</div>
+      <button class="logout-btn" style="margin-top:12px" onclick="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <section class="page-section active" id="sec-overview">
+      <div class="page-title">Admin Dashboard ⚙️</div>
+      <div class="page-sub">Placement Cell — Full Overview</div>
+      <div class="stats-row" style="grid-template-columns:repeat(5,1fr)">
+        <div class="stat-card"><div class="label">Total Students</div><div class="value" id="aStatStudents">0</div></div>
+        <div class="stat-card"><div class="label">Companies</div><div class="value" id="aStatCos">0</div></div>
+        <div class="stat-card"><div class="label">Jobs Posted</div><div class="value" id="aStatJobs">0</div></div>
+        <div class="stat-card"><div class="label">Total Applications</div><div class="value" id="aStatApps">0</div></div>
+        <div class="stat-card"><div class="label">Students Placed</div><div class="value" id="aStatPlaced">0</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">📊 Recent Applications</span></div>
+        <div id="aRecentApps"></div>
+      </div>
+    </section>
+
+    <!-- COMPANIES -->
+    <section class="page-section" id="sec-companies">
+      <div class="page-title">Company Registrations</div>
+      <div class="page-sub">Review and approve company accounts</div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">⏳ Pending Approval</span></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Company</th><th>Industry</th><th>Contact</th><th>Email</th><th>Registered</th><th>Action</th></tr></thead>
+          <tbody id="pendingBody"></tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">✅ Approved Companies</span></div>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>Company</th><th>Industry</th><th>Contact</th><th>Email</th><th>HQ</th><th>Action</th></tr></thead>
+          <tbody id="approvedBody"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- STUDENTS -->
+    <section class="page-section" id="sec-students">
+      <div class="page-title">All Students</div>
+      <div class="page-sub">View and manage registered students</div>
+      <div class="card">
+        <div style="overflow-x:auto">
+          <table id="studentsTable">
+            <thead><tr><th>Name</th><th>College</th><th>Branch</th><th>Year</th><th>CGPA</th><th>Skills</th><th>Resume</th><th>Action</th></tr></thead>
+            <tbody id="studentsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- POST JOB -->
+    <section class="page-section" id="sec-post-job">
+      <div class="page-title">Post a Job</div>
+      <div class="page-sub">Add a new job opening for students</div>
+      <div class="card" style="max-width:640px">
+        <div class="msg" id="jobMsg"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Company Name</label><input id="jCompany" placeholder="e.g. Google"/></div>
+          <div class="form-group"><label>Job Role</label><input id="jRole" placeholder="e.g. SDE Intern"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Package (LPA)</label><input id="jPackage" placeholder="e.g. 12 LPA"/></div>
+          <div class="form-group"><label>Location</label><input id="jLocation" placeholder="e.g. Bangalore"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Job Type</label>
+            <select id="jType"><option>Full Time</option><option>Internship</option><option>Contract</option></select>
+          </div>
+          <div class="form-group"><label>Minimum CGPA</label><input id="jCGPA" type="number" placeholder="6.5" step="0.1" min="0" max="10"/></div>
+        </div>
+        <div class="form-group"><label>Required Skills (comma separated)</label><input id="jSkills" placeholder="Python, Java, DSA"/></div>
+        <div class="form-group"><label>Last Date to Apply</label><input id="jDeadline" type="date"/></div>
+        <div class="form-group"><label>Job Description</label><textarea id="jDesc" placeholder="Describe the role, responsibilities..."></textarea></div>
+        <button class="action-btn btn-gold" style="width:100%;padding:13px;font-size:0.92rem" onclick="postJob()">Post Job Opening →</button>
+      </div>
+    </section>
+
+    <!-- MANAGE JOBS -->
+    <section class="page-section" id="sec-jobs">
+      <div class="page-title">Manage Jobs</div>
+      <div class="page-sub">All active job postings</div>
+      <div class="card">
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Company</th><th>Role</th><th>Package</th><th>Type</th><th>Min CGPA</th><th>Deadline</th><th>Action</th></tr></thead>
+            <tbody id="jobsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPLICATIONS -->
+    <section class="page-section" id="sec-applications">
+      <div class="page-title">All Applications</div>
+      <div class="page-sub">Review and update application statuses</div>
+      <div class="card">
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>Student</th><th>Branch</th><th>CGPA</th><th>Company</th><th>Role</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody id="appsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECRUITED -->
+    <section class="page-section" id="sec-recruited">
+      <div class="page-title">🏆 Companies That Recruited</div>
+      <div class="page-sub">Companies that have selected students from your college</div>
+      <div class="card">
+        <div id="recruitedList"></div>
+      </div>
+    </section>
+
+  <!-- ANALYTICS -->
+    <section class="page-section" id="sec-analytics">
+      <div class="page-title">📈 Analytics</div>
+      <div class="page-sub">Insights into your placement data</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="label">Avg Applicant CGPA</div><div class="value" id="anAvgCGPA" style="color:var(--accent2)">—</div></div>
+        <div class="stat-card"><div class="label">Most Applied Company</div><div class="value" id="anTopCo" style="font-size:1.1rem;color:var(--gold)">—</div></div>
+        <div class="stat-card"><div class="label">Top Applying Branch</div><div class="value" id="anTopBranch" style="font-size:1.1rem;color:var(--success)">—</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="card">
+          <div class="card-header"><span class="card-title">🏢 Applications per Company</span></div>
+          <div id="anCompanyBars"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="card-title">🎓 Applications per Branch</span></div>
+          <div id="anBranchBars"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">🗑 Reset Demo Data</span></div>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">Clear all students, jobs, applications and companies to start fresh. Use for testing only.</p>
+        <button class="action-btn btn-danger" onclick="resetDemoData()" style="padding:10px 24px">⚠ Reset All Data</button>
+      </div>
+    </section>
+
+    <!-- STUDENT PROFILE MODAL -->
+    <div id="profileModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:480px;width:90%;max-height:85vh;overflow-y:auto;position:relative">
+        <button onclick="closeModal()" style="position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer">×</button>
+        <div id="profileModalContent"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const auth = JSON.parse(localStorage.getItem('ch_loggedIn')||'null');
+    if(!auth||auth.role!=='admin'){ window.location.href='admin-login.html'; }
+    if(auth && auth.ts && (Date.now()-auth.ts > 8*60*60*1000)){
+      localStorage.removeItem('ch_loggedIn'); window.location.href='admin-login.html';
+    }
+
+    const S  = ()=>JSON.parse(localStorage.getItem('ch_students')||'[]');
+    const J  = ()=>JSON.parse(localStorage.getItem('ch_jobs')||'[]');
+    const A  = ()=>JSON.parse(localStorage.getItem('ch_apps')||'[]');
+    const CO = ()=>JSON.parse(localStorage.getItem('ch_companies')||'[]');
+
+    function showSection(id){
+      document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+      document.getElementById('sec-'+id).classList.add('active');
+      const idx=['overview','companies','students','post-job','jobs','applications','recruited','analytics'].indexOf(id);
+      document.querySelectorAll('.nav-item')[idx].classList.add('active');
+      render(id);
+    }
+
+    function render(id){
+      if(id==='overview')    renderOverview();
+      if(id==='companies')   renderCompanies();
+      if(id==='students')    renderStudents();
+      if(id==='jobs')        renderJobs();
+      if(id==='applications')renderApps();
+      if(id==='recruited')   renderRecruited();
+      if(id==='analytics')   renderAnalytics();
+    }
+
+    function updatePendingBadge(){
+      const count = CO().filter(c=>c.status==='pending').length;
+      const el = document.getElementById('pendingBadge');
+      if(count>0){ el.textContent=count; el.style.display='inline-block'; }
+      else { el.style.display='none'; }
+    }
+
+    function renderOverview(){
+      const placed=A().filter(a=>a.status==='Selected').map(a=>a.studentId);
+      document.getElementById('aStatStudents').textContent=S().length;
+      document.getElementById('aStatCos').textContent=CO().filter(c=>c.status==='approved').length;
+      document.getElementById('aStatJobs').textContent=J().length;
+      document.getElementById('aStatApps').textContent=A().length;
+      document.getElementById('aStatPlaced').textContent=[...new Set(placed)].length;
+      const recent=A().slice(-5).reverse();
+      if(!recent.length){document.getElementById('aRecentApps').innerHTML='<div class="empty-state">No applications yet.</div>';return;}
+      const studs=S();
+      document.getElementById('aRecentApps').innerHTML=`<table><thead><tr><th>Student</th><th>Company</th><th>Role</th><th>Status</th></tr></thead><tbody>`+
+        recent.map(a=>{
+          const st=studs.find(s=>s.id===a.studentId)||{name:'Unknown'};
+          const sc={'Applied':'blue','Under Review':'purple','Shortlisted':'gold','Selected':'green','Rejected':'red'};
+          return `<tr><td>${st.name}</td><td>${a.company}</td><td>${a.role}</td>
+            <td><span class="badge badge-${sc[a.status]||'blue'}">${a.status}</span></td></tr>`;
+        }).join('')+`</tbody></table>`;
+      updatePendingBadge();
+    }
+
+    function renderCompanies(){
+      const all = CO();
+      const pending  = all.filter(c=>c.status==='pending');
+      const approved = all.filter(c=>c.status==='approved');
+
+      // Pending
+      document.getElementById('pendingBody').innerHTML = pending.length
+        ? pending.map(c=>`<tr>
+            <td><strong>${c.name}</strong></td>
+            <td>${c.industry}</td>
+            <td>${c.contact}<br/><span style="color:var(--muted);font-size:0.75rem">${c.desig}</span></td>
+            <td style="font-size:0.82rem">${c.email}</td>
+            <td style="font-size:0.75rem;color:var(--muted)">${new Date(c.registeredAt).toLocaleDateString()}</td>
+            <td style="display:flex;gap:8px">
+              <button class="action-btn btn-gold" style="padding:5px 12px;font-size:0.75rem" onclick="approveCompany('${c.id}')">✓ Approve</button>
+              <button class="action-btn btn-danger" style="padding:5px 12px;font-size:0.75rem" onclick="rejectCompany('${c.id}')">✗ Reject</button>
+            </td></tr>`).join('')
+        : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">No pending registrations.</td></tr>';
+
+      // Approved
+      document.getElementById('approvedBody').innerHTML = approved.length
+        ? approved.map(c=>`<tr>
+            <td><strong>${c.name}</strong></td>
+            <td>${c.industry}</td>
+            <td>${c.contact}</td>
+            <td style="font-size:0.82rem">${c.email}</td>
+            <td>${c.hq||'—'}</td>
+            <td><button class="action-btn btn-danger" style="padding:5px 12px;font-size:0.75rem" onclick="removeCompany('${c.id}')">Remove</button></td>
+          </tr>`).join('')
+        : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">No approved companies yet.</td></tr>';
+
+      updatePendingBadge();
+    }
+
+    function approveCompany(id){
+      const list=CO(); const idx=list.findIndex(c=>c.id===id);
+      if(idx>-1){ list[idx].status='approved'; localStorage.setItem('ch_companies',JSON.stringify(list)); renderCompanies(); }
+    }
+    function rejectCompany(id){
+      if(!confirm('Reject this company?')) return;
+      const list=CO(); const idx=list.findIndex(c=>c.id===id);
+      if(idx>-1){ list[idx].status='rejected'; localStorage.setItem('ch_companies',JSON.stringify(list)); renderCompanies(); }
+    }
+    function removeCompany(id){
+      if(!confirm('Remove this company?')) return;
+      localStorage.setItem('ch_companies',JSON.stringify(CO().filter(c=>c.id!==id)));
+      renderCompanies();
+    }
+
+    function renderStudents(){
+      const list=S();
+      if(!list.length){document.getElementById('studentsBody').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">No students registered yet.</td></tr>';return;}
+      document.getElementById('studentsBody').innerHTML=list.map(s=>`<tr>
+        <td><strong>${s.name}</strong><br/><span style="color:var(--muted);font-size:0.75rem">${s.email}</span></td>
+        <td style="font-size:0.78rem">${s.college||'—'}</td><td>${s.branch}</td><td>${s.year}</td>
+        <td><span class="badge badge-green">${s.cgpa}</span></td>
+        <td style="max-width:160px;overflow:hidden">${(s.skills||[]).slice(0,3).join(', ')}</td>
+        <td>${s.resume?`<span class="badge badge-green">✓ Uploaded</span>`:`<span class="badge badge-red">None</span>`}</td>
+        <td style="display:flex;gap:6px"><button class="action-btn btn-blue" style="font-size:0.72rem;padding:5px 10px" onclick="viewStudent('${s.id}')">View</button><button class="action-btn btn-danger" style="font-size:0.75rem;padding:5px 10px" onclick="deleteStudent('${s.id}')">Delete</button></td>
+      </tr>`).join('');
+    }
+
+    function deleteStudent(id){
+      if(!confirm('Delete this student?')) return;
+      localStorage.setItem('ch_students',JSON.stringify(S().filter(s=>s.id!==id)));
+      renderStudents();
+    }
+
+    function renderJobs(){
+      const list=J();
+      if(!list.length){document.getElementById('jobsBody').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">No jobs posted yet.</td></tr>';return;}
+      document.getElementById('jobsBody').innerHTML=list.map(j=>`<tr>
+        <td><strong>${j.company}</strong></td>
+        <td>${j.role}</td>
+        <td><span class="badge badge-green">${j.package}</span></td>
+        <td><span class="badge badge-blue">${j.type}</span></td>
+        <td>${j.minCGPA}</td>
+        <td style="font-size:0.78rem;color:var(--muted)">${j.deadline||'—'}</td>
+        <td style="display:flex;gap:6px">${j.deadline&&new Date(j.deadline)<new Date()?'<span class="badge badge-red" style="font-size:0.65rem">Expired</span>':''}<button class="action-btn btn-danger" style="font-size:0.75rem;padding:5px 10px" onclick="deleteJob('${j.id}')">Delete</button></td>
+      </tr>`).join('');
+    }
+
+    function deleteJob(id){
+      if(!confirm('Delete this job?')) return;
+      localStorage.setItem('ch_jobs',JSON.stringify(J().filter(j=>j.id!==id)));
+      renderJobs();
+    }
+
+    function renderApps(){
+      const list=A(); const studs=S();
+      if(!list.length){document.getElementById('appsBody').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">No applications yet.</td></tr>';return;}
+      const sc={'Applied':'blue','Under Review':'purple','Shortlisted':'gold','Selected':'green','Rejected':'red'};
+      document.getElementById('appsBody').innerHTML=list.map(a=>{
+        const st=studs.find(s=>s.id===a.studentId)||{name:'Unknown',branch:'—',cgpa:'—'};
+        return `<tr>
+          <td><strong>${st.name}</strong></td>
+          <td>${st.branch}</td>
+          <td><span class="badge badge-green">${st.cgpa}</span></td>
+          <td>${a.company}</td><td>${a.role}</td>
+          <td style="font-size:0.75rem;color:var(--muted)">${new Date(a.appliedAt).toLocaleDateString()}</td>
+          <td>
+            <select class="status-sel" onchange="updateStatus('${a.id}',this.value)">
+              ${['Applied','Under Review','Shortlisted','Selected','Rejected'].map(s=>`<option ${a.status===s?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </td></tr>`;
+      }).join('');
+    }
+
+    function updateStatus(appId, newStatus){
+      const list=A();
+      const idx=list.findIndex(a=>a.id===appId);
+      if(idx>-1){ list[idx].status=newStatus; localStorage.setItem('ch_apps',JSON.stringify(list)); }
+    }
+
+    function postJob(){
+      const c=document.getElementById('jCompany').value.trim();
+      const r=document.getElementById('jRole').value.trim();
+      const p=document.getElementById('jPackage').value.trim();
+      const l=document.getElementById('jLocation').value.trim();
+      const t=document.getElementById('jType').value;
+      const cg=document.getElementById('jCGPA').value;
+      const sk=document.getElementById('jSkills').value.trim();
+      const d=document.getElementById('jDeadline').value;
+      const desc=document.getElementById('jDesc').value.trim();
+      const el=document.getElementById('jobMsg');
+      if(!c||!r||!p||!l||!cg){
+        el.textContent='Please fill in all required fields.';el.className='msg error';el.style.display='block';return;
+      }
+      const jobs=J();
+      jobs.push({id:'j_'+Date.now(),company:c,role:r,package:p,location:l,type:t,
+        minCGPA:parseFloat(cg),skills:sk.split(',').map(s=>s.trim()).filter(Boolean),
+        deadline:d,description:desc});
+      localStorage.setItem('ch_jobs',JSON.stringify(jobs));
+      el.textContent='✓ Job posted successfully!';el.className='msg success';el.style.display='block';
+      ['jCompany','jRole','jPackage','jLocation','jCGPA','jSkills','jDeadline','jDesc'].forEach(id=>document.getElementById(id).value='');
+      setTimeout(()=>{el.style.display='none';},3000);
+    }
+
+    function renderRecruited(){
+      const allAP=A(),allST=S(),allJB=J();
+      const selectedAP=allAP.filter(a=>a.status==='Selected');
+      // Group by company
+      const byCompany={};
+      selectedAP.forEach(a=>{
+        if(!byCompany[a.company]) byCompany[a.company]={company:a.company,students:[],jobs:new Set()};
+        const st=allST.find(s=>s.id===a.studentId);
+        const job=allJB.find(j=>j.id===a.jobId);
+        if(st) byCompany[a.company].students.push({...st, role:a.role, package: job?job.package:'—'});
+        if(job) byCompany[a.company].jobs.add(job.package);
+      });
+      const companies=Object.values(byCompany);
+      if(!companies.length){
+        document.getElementById('recruitedList').innerHTML='<div class="empty-state">No students have been selected yet.</div>';return;
+      }
+      const logoC={'google':'#ea4335','infosys':'#007cc2','tcs':'#1b2d6b','amazon':'#ff9900','wipro':'#341c6b','microsoft':'#00a4ef','accenture':'#a100ff','capgemini':'#003189'};
+      function hsh(s){return s.split('').reduce((a,c)=>a+c.charCodeAt(0),0);}
+      document.getElementById('recruitedList').innerHTML=companies.map(c=>{
+        const k=c.company.toLowerCase().split(' ')[0];
+        const bg=logoC[k]||`hsl(${hsh(c.company)%360},50%,38%)`;
+        const tc=k==='amazon'?'#000':'#fff';
+        const pkgs=c.students.map(s=>parseFloat(s.package)).filter(Boolean);
+        const maxPkg=pkgs.length?Math.max(...pkgs)+'  LPA':'—';
+        return `<div style="border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+            <div style="width:48px;height:48px;border-radius:10px;background:${bg};color:${tc};display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;flex-shrink:0">${c.company.slice(0,2).toUpperCase()}</div>
+            <div>
+              <div style="font-weight:800;font-size:1rem">${c.company}</div>
+              <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">${c.students.length} student${c.students.length!==1?'s':''} recruited · Highest: <span style="color:var(--gold);font-weight:700">${maxPkg}</span></div>
+            </div>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:0.83rem">
+            <thead><tr><th style="text-align:left;padding:6px 10px;color:var(--muted);font-size:0.72rem;border-bottom:1px solid var(--border)">Student</th><th style="text-align:left;padding:6px 10px;color:var(--muted);font-size:0.72rem;border-bottom:1px solid var(--border)">Branch</th><th style="text-align:left;padding:6px 10px;color:var(--muted);font-size:0.72rem;border-bottom:1px solid var(--border)">CGPA</th><th style="text-align:left;padding:6px 10px;color:var(--muted);font-size:0.72rem;border-bottom:1px solid var(--border)">Role</th><th style="text-align:left;padding:6px 10px;color:var(--muted);font-size:0.72rem;border-bottom:1px solid var(--border)">Package</th></tr></thead>
+            <tbody>${c.students.map(s=>`<tr>
+              <td style="padding:8px 10px"><strong>${s.name}</strong><br/><span style="color:var(--muted);font-size:0.72rem">${s.college||'—'}</span></td>
+              <td style="padding:8px 10px;color:var(--muted)">${s.branch}</td>
+              <td style="padding:8px 10px"><span class="badge badge-green">${s.cgpa}</span></td>
+              <td style="padding:8px 10px;font-size:0.8rem">${s.role}</td>
+              <td style="padding:8px 10px"><span class="badge badge-gold">${s.package}</span></td>
+            </tr>`).join('')}</tbody>
+          </table>
+        </div>`;
+      }).join('');
+    }
+    function renderAnalytics(){
+      const allAP=A(), allST=S();
+      // Avg CGPA of applicants
+      const applicantIds=[...new Set(allAP.map(a=>a.studentId))];
+      const cgpas=applicantIds.map(id=>{ const s=allST.find(x=>x.id===id); return s?parseFloat(s.cgpa):null; }).filter(Boolean);
+      document.getElementById('anAvgCGPA').textContent = cgpas.length ? (cgpas.reduce((a,b)=>a+b,0)/cgpas.length).toFixed(2) : '—';
+      // Most applied company
+      const coCounts={};
+      allAP.forEach(a=>{ coCounts[a.company]=(coCounts[a.company]||0)+1; });
+      const topCo=Object.entries(coCounts).sort((a,b)=>b[1]-a[1])[0];
+      document.getElementById('anTopCo').textContent = topCo ? topCo[0] : '—';
+      // Top branch
+      const branchCounts={};
+      applicantIds.forEach(id=>{ const s=allST.find(x=>x.id===id); if(s) branchCounts[s.branch]=(branchCounts[s.branch]||0)+1; });
+      const topBranch=Object.entries(branchCounts).sort((a,b)=>b[1]-a[1])[0];
+      document.getElementById('anTopBranch').textContent = topBranch ? topBranch[0].split(' ')[0] : '—';
+      // Bar charts
+      function barChart(containerId, data, color){
+        const max=Math.max(...Object.values(data),1);
+        document.getElementById(containerId).innerHTML = Object.entries(data).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([label,count])=>`
+          <div style="margin-bottom:10px">
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px">
+              <span style="font-weight:600">${label}</span><span style="color:var(--muted)">${count}</span>
+            </div>
+            <div style="height:8px;background:var(--border);border-radius:100px;overflow:hidden">
+              <div style="height:100%;width:${Math.round((count/max)*100)}%;background:${color};border-radius:100px;transition:width 0.5s ease"></div>
+            </div>
+          </div>`).join('') || '<p style="color:var(--muted);font-size:0.83rem">No data yet.</p>';
+      }
+      barChart('anCompanyBars', coCounts, 'var(--accent)');
+      barChart('anBranchBars', branchCounts, 'var(--success)');
+    }
+
+    function viewStudent(id){
+      const s=S().find(x=>x.id===id); if(!s) return;
+      const modal=document.getElementById('profileModal');
+      const achs=JSON.parse(localStorage.getItem('ch_ach_'+id)||'[]');
+      const myApps=A().filter(a=>a.studentId===id);
+      document.getElementById('profileModalContent').innerHTML=`
+        <div style="font-family:'Nunito',sans-serif">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+            <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.2rem;color:#fff">${s.name.slice(0,2).toUpperCase()}</div>
+            <div><div style="font-size:1.1rem;font-weight:800">${s.name}</div><div style="font-size:0.78rem;color:var(--muted)">${s.college||'—'} · ${s.branch}</div></div>
+          </div>
+          ${[['Email',s.email],['Phone',s.phone],['Course',s.course],['Year',s.year],['CGPA',s.cgpa]].map(([l,v])=>`
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem">
+            <span style="color:var(--muted);font-weight:600">${l}</span><span style="font-weight:700">${v}</span></div>`).join('')}
+          <div style="margin-top:14px"><div style="font-size:0.78rem;color:var(--muted);font-weight:700;margin-bottom:8px">SKILLS</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">${(s.skills||[]).map(sk=>`<span style="padding:3px 10px;background:rgba(59,130,246,0.12);color:var(--accent);border-radius:100px;font-size:0.75rem;font-weight:700">${sk}</span>`).join('')||'None'}</div>
+          </div>
+          ${achs.length?`<div style="margin-top:14px"><div style="font-size:0.78rem;color:var(--muted);font-weight:700;margin-bottom:8px">ACHIEVEMENTS (${achs.length})</div>
+            ${achs.map(a=>`<div style="padding:6px 0;font-size:0.82rem;border-bottom:1px solid var(--border)"><strong>${a.title}</strong> <span style="color:var(--muted)">${a.year||''}</span></div>`).join('')}
+          </div>`:''}
+          <div style="margin-top:14px"><div style="font-size:0.78rem;color:var(--muted);font-weight:700;margin-bottom:6px">APPLICATIONS (${myApps.length})</div>
+            ${myApps.map(a=>`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:0.82rem;border-bottom:1px solid var(--border)"><span>${a.company} — ${a.role}</span><span style="color:var(--muted)">${a.status}</span></div>`).join('')||'None'}
+          </div>
+        </div>`;
+      modal.style.display='flex';
+    }
+    function closeModal(){ document.getElementById('profileModal').style.display='none'; }
+    document.getElementById('profileModal').addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+
+    function resetDemoData(){
+      if(!confirm('⚠ This will delete ALL students, jobs, applications and companies. Are you sure?')) return;
+      if(!confirm('This cannot be undone. Confirm reset?')) return;
+      ['ch_students','ch_jobs','ch_apps','ch_companies'].forEach(k=>localStorage.removeItem(k));
+      // clear notifs and interviews for all known student ids
+      Object.keys(localStorage).filter(k=>k.startsWith('ch_notifs_')||k.startsWith('ch_interviews_')||k.startsWith('ch_ach_')).forEach(k=>localStorage.removeItem(k));
+      alert('✓ All data reset. Refresh the page.');
+      location.reload();
+    }
+
+    function logout(){localStorage.removeItem('ch_loggedIn');window.location.href='index.html';}
+
+    renderOverview();
+  </script>
+</body>
+</html>
